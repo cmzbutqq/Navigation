@@ -152,10 +152,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vertexCount: 10000
-  mapSize: 200
-  minConnections: 2
+  mapSize: 100
+  minConnections: 1
   maxConnections: 4
   gridCellSize: 10
+  preventIntersections: 1
+  maxAttempts: 3
   showGridColors: 1
   gridColorA: {r: 1, g: 1, b: 1, a: 1}
   gridColorB: {r: 0, g: 0, b: 0, a: 1}
