@@ -9,8 +9,8 @@ public class MapGenerator : MonoBehaviour
     public float mapSize = 100f;
     [Tooltip("Minimum connections per vertex (recommend 1 for MST)")]
     public int minConnections = 1; // 改为1确保MST基础连通性
-    public int maxConnections = 5;
-    public float gridCellSize = 10f;
+    public int maxConnections = 4;
+    public float gridCellSize = 5f;
 
     [Header("Optimization")]
     [Tooltip("Prevent edge intersections (performance heavy)")]
