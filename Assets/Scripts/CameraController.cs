@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 10f;
+    public float moveSpeed = 20f;
     public float heightChangeSpeed = 5f;
     public float minHeight = 5f;
     public float maxHeight = 50f;
@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
     [Header("Rotation Settings")]
     public float rotationSpeed = 50f;
     public float minVerticalAngle = 0f;
-    public float maxVerticalAngle = 90f;
+    public float maxVerticalAngle = 89f;
 
     private Vector3 lastMousePosition;
     private float currentXRotation;
