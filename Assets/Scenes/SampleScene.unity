@@ -426,9 +426,9 @@ MonoBehaviour:
   heightChangeSpeed: 5
   minHeight: 5
   maxHeight: 50
-  rotationSpeed: 3
-  minVerticalAngle: -80
-  maxVerticalAngle: 80
+  rotationSpeed: 50
+  minVerticalAngle: 0
+  maxVerticalAngle: 90
 --- !u!1 &1971369901
 GameObject:
   m_ObjectHideFlags: 0
