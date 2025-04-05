@@ -5,11 +5,16 @@ public class NavigationUI : MonoBehaviour
 {
     public Camera mainCamera;
     public Material pathMaterial;
+    public Material startMaterial;
+    public Material endMaterial;
     public Material highlightMaterial;
 
     private MapGenerator mapGenerator;
     private Pathfinder pathfinder;
     private List<GameObject> highlightedObjects = new List<GameObject>();
+
+    private int? startVertexIndex = null;
+    private int? endVertexIndex = null;
 
     void Start()
     {
@@ -30,20 +35,61 @@ public class NavigationUI : MonoBehaviour
                     Vector3 clickPos = hit.point;
                     int nearestVertex = FindNearestVertex(clickPos);
 
-                    // Highlight vertex
-                    HighlightVertex(nearestVertex);
-
-                    // For demo: find path from vertex 0 to clicked vertex
-                    if (highlightedObjects.Count == 2)
+                    // Set start or end vertex
+                    if (!startVertexIndex.HasValue)
                     {
-                        ClearHighlights();
-                        HighlightVertex(0);
-                        HighlightVertex(nearestVertex);
+                        // First click - set start vertex
+                        startVertexIndex = nearestVertex;
+                        HighlightVertex(nearestVertex, startMaterial);
+                        Debug.Log($"Start vertex set to: {nearestVertex}");
+                    }
+                    else if (!endVertexIndex.HasValue && nearestVertex != startVertexIndex)
+                    {
+                        // Second click - set end vertex (must be different from start)
+                        endVertexIndex = nearestVertex;
+                        HighlightVertex(nearestVertex, endMaterial);
+                        Debug.Log($"End vertex set to: {nearestVertex}");
 
-                        List<int> path = pathfinder.FindShortestPath(0, nearestVertex);
-                        HighlightPath(path);
+                        // Calculate and display path
+                        CalculateAndDisplayPath();
+                    }
+                    else
+                    {
+                        // Reset selection on third click
+                        ClearHighlights();
+                        startVertexIndex = nearestVertex;
+                        endVertexIndex = null;
+                        HighlightVertex(nearestVertex, startMaterial);
+                        Debug.Log($"Reset selection. New start vertex: {nearestVertex}");
                     }
                 }
+            }
+        }
+    }
+
+    void CalculateAndDisplayPath()
+    {
+        if (startVertexIndex.HasValue && endVertexIndex.HasValue)
+        {
+            List<int> path = pathfinder.FindShortestPath(startVertexIndex.Value, endVertexIndex.Value);
+
+            if (path != null && path.Count > 0)
+            {
+                HighlightPath(path);
+
+                // Calculate total distance
+                float totalDistance = 0f;
+                List<Vector3> vertices = mapGenerator.GetVertices();
+                for (int i = 0; i < path.Count - 1; i++)
+                {
+                    totalDistance += Vector3.Distance(vertices[path[i]], vertices[path[i + 1]]);
+                }
+
+                Debug.Log($"Path found! Distance: {totalDistance.ToString("F2")} units");
+            }
+            else
+            {
+                Debug.LogWarning("No valid path found between selected vertices!");
             }
         }
     }
@@ -67,7 +113,7 @@ public class NavigationUI : MonoBehaviour
         return nearestIndex;
     }
 
-    void HighlightVertex(int index)
+    void HighlightVertex(int index, Material material)
     {
         GameObject vertex = GameObject.Find("Vertex_" + index);
         if (vertex != null)
@@ -75,7 +121,7 @@ public class NavigationUI : MonoBehaviour
             Renderer renderer = vertex.GetComponent<Renderer>();
             if (renderer != null)
             {
-                renderer.material = highlightMaterial;
+                renderer.material = material;
                 highlightedObjects.Add(vertex);
             }
         }
