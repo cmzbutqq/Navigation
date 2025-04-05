@@ -151,11 +151,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78f4e1b2f860a7b4f8c5b3a2cffd8ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vertexCount: 1000
-  mapSize: 50
+  vertexCount: 10000
+  mapSize: 200
   minConnections: 2
   maxConnections: 4
-  connectionRadius: 8
+  gridCellSize: 10
+  showGridColors: 1
+  gridColorA: {r: 1, g: 1, b: 1, a: 1}
+  gridColorB: {r: 0, g: 0, b: 0, a: 1}
   vertexPrefab: {fileID: 5147271688726898398, guid: 23096621987311c41ac064f8f405ae1d, type: 3}
   edgePrefab: {fileID: 2794921643535646143, guid: b87cf190452f8db44b279548d136116c, type: 3}
 --- !u!4 &19882155
