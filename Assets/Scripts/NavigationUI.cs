@@ -7,11 +7,15 @@ public class NavigationUI : MonoBehaviour
     public Material pathMaterial;
     public Material startMaterial;
     public Material endMaterial;
-    public Material highlightMaterial;
+    public Material defaultVertexMaterial;
+    public Material defaultEdgeMaterial;
 
     private MapGenerator mapGenerator;
     private Pathfinder pathfinder;
-    private List<GameObject> highlightedObjects = new List<GameObject>();
+
+    // 跟踪当前高亮的对象及其原始材质
+    private Dictionary<GameObject, Material> originalMaterials = new Dictionary<GameObject, Material>();
+    private List<GameObject> currentPathEdges = new List<GameObject>();
 
     private int? startVertexIndex = null;
     private int? endVertexIndex = null;
@@ -39,6 +43,7 @@ public class NavigationUI : MonoBehaviour
                     if (!startVertexIndex.HasValue)
                     {
                         // First click - set start vertex
+                        ResetAllHighlights();
                         startVertexIndex = nearestVertex;
                         HighlightVertex(nearestVertex, startMaterial);
                         Debug.Log($"Start vertex set to: {nearestVertex}");
@@ -56,7 +61,7 @@ public class NavigationUI : MonoBehaviour
                     else
                     {
                         // Reset selection on third click
-                        ClearHighlights();
+                        ResetAllHighlights();
                         startVertexIndex = nearestVertex;
                         endVertexIndex = null;
                         HighlightVertex(nearestVertex, startMaterial);
@@ -71,6 +76,9 @@ public class NavigationUI : MonoBehaviour
     {
         if (startVertexIndex.HasValue && endVertexIndex.HasValue)
         {
+            // 清除旧路径高亮
+            ResetPathHighlight();
+
             List<int> path = pathfinder.FindShortestPath(startVertexIndex.Value, endVertexIndex.Value);
 
             if (path != null && path.Count > 0)
@@ -121,8 +129,13 @@ public class NavigationUI : MonoBehaviour
             Renderer renderer = vertex.GetComponent<Renderer>();
             if (renderer != null)
             {
+                // 保存原始材质
+                if (!originalMaterials.ContainsKey(vertex))
+                {
+                    originalMaterials.Add(vertex, renderer.material);
+                }
+
                 renderer.material = material;
-                highlightedObjects.Add(vertex);
             }
         }
     }
@@ -142,33 +155,44 @@ public class NavigationUI : MonoBehaviour
                 Renderer renderer = edge.GetComponent<Renderer>();
                 if (renderer != null)
                 {
+                    // 保存原始材质
+                    if (!originalMaterials.ContainsKey(edge))
+                    {
+                        originalMaterials.Add(edge, renderer.material);
+                    }
+
                     renderer.material = pathMaterial;
-                    highlightedObjects.Add(edge);
+                    currentPathEdges.Add(edge);
                 }
             }
         }
     }
 
-    void ClearHighlights()
+    void ResetPathHighlight()
     {
-        foreach (GameObject obj in highlightedObjects)
+        // 只重置路径边的高亮，保留起点和终点
+        foreach (GameObject edge in currentPathEdges)
         {
-            if (obj != null)
+            if (edge != null && originalMaterials.TryGetValue(edge, out Material originalMat))
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    if (obj.name.StartsWith("Vertex_"))
-                    {
-                        renderer.material = Resources.Load<Material>("VertexMaterial");
-                    }
-                    else if (obj.name.StartsWith("Edge_"))
-                    {
-                        renderer.material = Resources.Load<Material>("EdgeMaterial");
-                    }
-                }
+                edge.GetComponent<Renderer>().material = originalMat;
             }
         }
-        highlightedObjects.Clear();
+        currentPathEdges.Clear();
+    }
+
+    void ResetAllHighlights()
+    {
+        // 重置所有高亮对象
+        foreach (var kvp in originalMaterials)
+        {
+            if (kvp.Key != null)
+            {
+                kvp.Key.GetComponent<Renderer>().material = kvp.Value;
+            }
+        }
+
+        originalMaterials.Clear();
+        currentPathEdges.Clear();
     }
 }
