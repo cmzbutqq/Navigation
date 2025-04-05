@@ -155,7 +155,7 @@ MonoBehaviour:
   mapSize: 100
   minConnections: 1
   maxConnections: 4
-  gridCellSize: 10
+  gridCellSize: 5
   preventIntersections: 1
   maxAttempts: 3
   showGridColors: 1
