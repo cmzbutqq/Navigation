@@ -8,7 +8,7 @@ public class MapGenerator : MonoBehaviour
     public float mapSize = 100f;
     public int minConnections = 2;
     public int maxConnections = 5;
-    public float gridCellSize = 10f; // 替换原来的connectionRadius
+    public float gridCellSize = 10f; // 同时也是connectionRadius
 
     [Header("Visualization Settings")]
     public bool showGridColors = true;
