@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
     public float moveSpeed = 20f;
     public float heightChangeSpeed = 5f;
     public float minHeight = 5f;
-    public float maxHeight = 50f;
+    public float maxHeight = 500f;
 
     [Header("Rotation Settings")]
     public float rotationSpeed = 50f;
