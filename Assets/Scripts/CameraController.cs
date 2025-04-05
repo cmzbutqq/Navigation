@@ -9,9 +9,9 @@ public class CameraController : MonoBehaviour
     public float maxHeight = 50f;
 
     [Header("Rotation Settings")]
-    public float rotationSpeed = 3f;
-    public float minVerticalAngle = -80f;
-    public float maxVerticalAngle = 80f;
+    public float rotationSpeed = 50f;
+    public float minVerticalAngle = 0f;
+    public float maxVerticalAngle = 90f;
 
     private Vector3 lastMousePosition;
     private float currentXRotation;
