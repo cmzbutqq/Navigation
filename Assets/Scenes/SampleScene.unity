@@ -204,6 +204,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 963194227}
   pathMaterial: {fileID: 2100000, guid: 731f77533aaa61545849acf53d6ff545, type: 2}
+  startMaterial: {fileID: 2100000, guid: 9aab0a8f88fb2c740b68f61a8a690450, type: 2}
+  endMaterial: {fileID: 2100000, guid: 525f8dd3d9bcb464d86d7eb1f2353e3f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: a0d8cb78734c5e8499b464454db9dcff, type: 2}
 --- !u!4 &174219428
 Transform:
