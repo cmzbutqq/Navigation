@@ -177,41 +177,64 @@ public class SearchUI : MonoBehaviour
         currentRangeCircle.transform.localScale = new Vector3( radius * 2, currentRangeCircle.transform.localScale.y, radius * 2);
     }
 
-    
+
 
     void RestoreOriginalAppearance()
     {
         // 恢复顶点颜色
         foreach (var kvp in originalVertexColors)
         {
-            GameObject vertexObj = GameObject.Find($"Vertex_{kvp.Key}");
-            if (vertexObj != null)
+            string vertexName = $"Vertex_{kvp.Key}";
+            GameObject vertexObj = GameObject.Find(vertexName);
+
+            // 检查对象是否存在且未被销毁
+            if (vertexObj != null && vertexObj.activeInHierarchy)
             {
-                vertexObj.GetComponent<Renderer>().material.color = kvp.Value;
+                Renderer renderer = vertexObj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.color = kvp.Value;
+                }
             }
         }
 
         // 恢复边颜色
         foreach (var kvp in originalEdgeColors)
         {
-            GameObject edgeObj = GameObject.Find($"Edge_{kvp.Key}");
-            if (edgeObj != null)
+            string edgeName = $"Edge_{kvp.Key}";
+            GameObject edgeObj = GameObject.Find(edgeName);
+
+            // 检查对象是否存在且未被销毁
+            if (edgeObj != null && edgeObj.activeInHierarchy)
             {
-                edgeObj.GetComponent<Renderer>().material.color = kvp.Value;
+                Renderer renderer = edgeObj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.color = kvp.Value;
+                }
             }
         }
 
         // 清理
         originalVertexColors.Clear();
         originalEdgeColors.Clear();
-        highlightedObjects.Clear();
 
+        // 安全销毁标记物体
         if (currentMarker != null)
+        {
             Destroy(currentMarker);
+            currentMarker = null;
+        }
 
         if (currentRangeCircle != null)
+        {
             Destroy(currentRangeCircle);
+            currentRangeCircle = null;
+        }
+
+        highlightedObjects.Clear();
     }
+
 
     void CancelSearch()
     {
