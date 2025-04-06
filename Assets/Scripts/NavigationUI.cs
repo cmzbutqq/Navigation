@@ -13,8 +13,8 @@ public class NavigationUI : MonoBehaviour
     private MapGenerator mapGenerator;
     private Pathfinder pathfinder;
 
-    // 跟踪当前高亮的对象及其原始材质
-    private Dictionary<GameObject, Material> originalMaterials = new Dictionary<GameObject, Material>();
+    // 只记录当前高亮的对象，不再存储原始材质
+    private List<GameObject> highlightedVertices = new List<GameObject>();
     private List<GameObject> currentPathEdges = new List<GameObject>();
 
     private int? startVertexIndex = null;
@@ -76,7 +76,7 @@ public class NavigationUI : MonoBehaviour
     {
         if (startVertexIndex.HasValue && endVertexIndex.HasValue)
         {
-            // 清除旧路径高亮
+            // Reset previous path highlights
             ResetPathHighlight();
 
             List<int> path = pathfinder.FindShortestPath(startVertexIndex.Value, endVertexIndex.Value);
@@ -129,13 +129,8 @@ public class NavigationUI : MonoBehaviour
             Renderer renderer = vertex.GetComponent<Renderer>();
             if (renderer != null)
             {
-                // 保存原始材质
-                if (!originalMaterials.ContainsKey(vertex))
-                {
-                    originalMaterials.Add(vertex, renderer.material);
-                }
-
                 renderer.material = material;
+                highlightedVertices.Add(vertex);
             }
         }
     }
@@ -155,12 +150,6 @@ public class NavigationUI : MonoBehaviour
                 Renderer renderer = edge.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    // 保存原始材质
-                    if (!originalMaterials.ContainsKey(edge))
-                    {
-                        originalMaterials.Add(edge, renderer.material);
-                    }
-
                     renderer.material = pathMaterial;
                     currentPathEdges.Add(edge);
                 }
@@ -170,12 +159,12 @@ public class NavigationUI : MonoBehaviour
 
     void ResetPathHighlight()
     {
-        // 只重置路径边的高亮，保留起点和终点
+        // 恢复路径边的默认材质
         foreach (GameObject edge in currentPathEdges)
         {
-            if (edge != null && originalMaterials.TryGetValue(edge, out Material originalMat))
+            if (edge != null)
             {
-                edge.GetComponent<Renderer>().material = originalMat;
+                edge.GetComponent<Renderer>().material = defaultEdgeMaterial;
             }
         }
         currentPathEdges.Clear();
@@ -183,16 +172,28 @@ public class NavigationUI : MonoBehaviour
 
     void ResetAllHighlights()
     {
-        // 重置所有高亮对象
-        foreach (var kvp in originalMaterials)
+        // 恢复所有高亮顶点的默认材质
+        foreach (GameObject vertex in highlightedVertices)
         {
-            if (kvp.Key != null)
+            if (vertex != null)
             {
-                kvp.Key.GetComponent<Renderer>().material = kvp.Value;
+                vertex.GetComponent<Renderer>().material = defaultVertexMaterial;
             }
         }
+        highlightedVertices.Clear();
 
-        originalMaterials.Clear();
+        // 恢复路径边的默认材质
+        foreach (GameObject edge in currentPathEdges)
+        {
+            if (edge != null)
+            {
+                edge.GetComponent<Renderer>().material = defaultEdgeMaterial;
+            }
+        }
         currentPathEdges.Clear();
+
+        // 重置起点和终点
+        startVertexIndex = null;
+        endVertexIndex = null;
     }
 }
