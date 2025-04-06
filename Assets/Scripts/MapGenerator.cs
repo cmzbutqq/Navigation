@@ -176,12 +176,26 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    void AddEdge(int from, int to)
+    void AddEdge(int a, int b)
     {
-        adjacencyList[from].Add(to);
-        adjacencyList[to].Add(from);
-        allEdges.Add(new Edge { from = from, to = to });
+        // 确保 from < to
+        int from = Mathf.Min(a, b);
+        int to = Mathf.Max(a, b);
+
+        // 检查是否已存在该边（避免重复）
+        if (!adjacencyList[from].Contains(to))
+        {
+            adjacencyList[from].Add(to);
+            adjacencyList[to].Add(from);
+            allEdges.Add(new Edge
+            {
+                from = from,
+                to = to,
+                length = Vector3.Distance(vertices[from], vertices[to])
+            });
+        }
     }
+
 
     bool DoesEdgeIntersectExisting(Edge newEdge)
     {
@@ -276,7 +290,7 @@ public class MapGenerator : MonoBehaviour
         // 顶点实例化
         for (int i = 0; i < vertexCount; i++)
         {
-            var vertex = Instantiate(vertexPrefab, vertices[i], Quaternion.identity, transform);
+            GameObject vertex = Instantiate(vertexPrefab, vertices[i], Quaternion.identity, transform);
             vertex.name = $"Vertex_{i}";
 
             if (showGridColors)
@@ -288,9 +302,9 @@ public class MapGenerator : MonoBehaviour
         }
 
         // 边实例化
-        foreach (var e in allEdges)
+        foreach (Edge e in allEdges)
         {
-            var edge = Instantiate(edgePrefab, transform);
+            GameObject edge = Instantiate(edgePrefab, transform);
             edge.name = $"Edge_{e.from}_{e.to}";
 
             Vector3 dir = vertices[e.to] - vertices[e.from];
